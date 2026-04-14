@@ -13,8 +13,7 @@ import {
 } from "antd";
 import { useCallback, useState } from "react";
 
-import { generateGeminiReply } from "~/lib/gemini";
-import { useAppSelector } from "~/store/hooks";
+import { generateGeminiOutput } from "~/lib/gemini";
 
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
@@ -45,7 +44,6 @@ const resources = [
 ];
 
 export function Welcome() {
-  const appName = useAppSelector((s) => s.app.appName);
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY ?? "";
   const [prompt, setPrompt] = useState(
     "Give one short tip for staying hydrated.",
@@ -63,7 +61,7 @@ export function Welcome() {
     }
     setLoading(true);
     try {
-      const text = await generateGeminiReply(apiKey.trim(), prompt.trim());
+      const text = await generateGeminiOutput(prompt.trim());
       setReply(text);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Gemini request failed.");
@@ -75,9 +73,10 @@ export function Welcome() {
   return (
     <div className={styles.page}>
       <div className={styles.brandRow}>
-        <Typography.Title level={2} style={{ marginBottom: 4 }}>
-          {appName}
-        </Typography.Title>
+        <Typography.Title
+          level={2}
+          style={{ marginBottom: 4 }}
+        ></Typography.Title>
         <Typography.Text type="secondary">
           TypeScript · Redux Toolkit · Ant Design · SCSS modules · Gemini (demo)
         </Typography.Text>

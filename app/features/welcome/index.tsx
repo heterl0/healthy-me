@@ -1,6 +1,8 @@
+import { Welcome } from "./welcome";
+
 export function meta() {
   return [
-    { title: "Healthy Me - Home Page" },
+    { title: "Healthy Me - Welcome Page" },
     {
       name: "description",
       content: "Demo stack: React Router, Redux Toolkit, Ant Design, Gemini.",
@@ -8,6 +10,6 @@ export function meta() {
   ];
 }
 
-export default function Home() {
-  return <div>Home - No Content</div>;
+export default function WelcomePage() {
+  return <Welcome />;
 }
