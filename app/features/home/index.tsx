@@ -1,5 +1,5 @@
 import FitnessForm from "./components/form-fitness";
-
+import styles from "./styles.module.scss";
 export function meta() {
   return [
     { title: "Healthy Me - Home Page" },
@@ -11,5 +11,9 @@ export function meta() {
 }
 
 export default function Home() {
-  return <FitnessForm onSubmit={() => {}} />;
+  return (
+    <div className={styles.homeContainer}>
+      <FitnessForm onSubmit={() => {}} />
+    </div>
+  );
 }

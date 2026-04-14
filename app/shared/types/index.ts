@@ -8,3 +8,11 @@ export interface FitnessBasicInfo {
 }
 
 export type FitnessFormData = FitnessBasicInfo;
+
+export interface FitnessReport {
+  id: string;
+  basicInfo: FitnessBasicInfo;
+  report: Record<string, unknown>;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -135,7 +135,7 @@ export default function FitnessForm({ onSubmit }: Props) {
             { required: true, message: "Please select exercise duration" },
           ]}
         >
-          <Select placeholder="Select duration">
+          <Select placeholder="Select duration" style={{ height: 40 }}>
             <Select.Option value="15">15 minutes</Select.Option>
             <Select.Option value="30">30 minutes</Select.Option>
             <Select.Option value="45">45 minutes</Select.Option>

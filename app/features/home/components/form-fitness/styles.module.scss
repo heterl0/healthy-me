@@ -100,6 +100,10 @@ $background-light: #fafafa;
 
 .formCol {
   margin-bottom: 0;
+
+  input {
+    height: 40px;
+  }
 }
 
 .submitButton {
