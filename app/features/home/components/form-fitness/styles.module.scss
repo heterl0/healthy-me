@@ -5,7 +5,8 @@ $border-color: #e8e8e8;
 $background-light: #fafafa;
 
 .formCard {
-  max-width: 600px;
+  width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 32px;
   border-radius: 12px;
@@ -124,5 +125,10 @@ $background-light: #fafafa;
 
   &:active {
     transform: translateY(0);
+  }
+
+  &:disabled {
+    transform: none;
+    box-shadow: none;
   }
 }

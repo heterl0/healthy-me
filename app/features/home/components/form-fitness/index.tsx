@@ -1,36 +1,31 @@
-import { useState } from "react";
-import { Form, Input, InputNumber, Button, Select, Card, message } from "antd";
+import { Form, Input, InputNumber, Button, Select, Card } from "antd";
 import { Activity } from "lucide-react";
 import styles from "./styles.module.scss";
 import type { FitnessFormData } from "~/shared/types";
 
 type Props = {
-  onSubmit: (data: FitnessFormData) => void;
+  onSubmit: (data: FitnessFormData) => Promise<void>;
+  isSubmitting?: boolean;
+  submitLabel?: string;
 };
 
-export default function FitnessForm({ onSubmit }: Props) {
+export default function FitnessForm({
+  onSubmit,
+  isSubmitting = false,
+  submitLabel = "Save Profile",
+}: Props) {
   const [form] = Form.useForm<FitnessFormData>();
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (values: FitnessFormData) => {
-    try {
-      setLoading(true);
-      const formData: FitnessFormData = {
-        name: values.name,
-        age: values.age,
-        weight: values.weight,
-        height: values.height,
-        goalWeight: values.goalWeight,
-        timePerDay: values.timePerDay,
-      };
-      onSubmit(formData);
-      message.success("Profile updated successfully!");
-      // form.resetFields();
-    } catch (_error) {
-      message.error("Failed to update profile");
-    } finally {
-      setLoading(false);
-    }
+    const formData: FitnessFormData = {
+      name: values.name,
+      age: values.age,
+      weight: values.weight,
+      height: values.height,
+      goalWeight: values.goalWeight,
+      timePerDay: values.timePerDay,
+    };
+    await onSubmit(formData);
   };
 
   return (
@@ -39,7 +34,11 @@ export default function FitnessForm({ onSubmit }: Props) {
         <Activity className={styles.headerIcon} />
         <h1 className={styles.title}>Fitness Tracker</h1>
       </div>
-      <p className={styles.subtitle}>Track your fitness progress and goals</p>
+      <p className={styles.subtitle}>
+        {isSubmitting
+          ? "Analyzing your profile with AI..."
+          : "Track your fitness progress and goals"}
+      </p>
 
       <Form
         form={form}
@@ -149,11 +148,12 @@ export default function FitnessForm({ onSubmit }: Props) {
           <Button
             type="primary"
             htmlType="submit"
-            loading={loading}
+            loading={isSubmitting}
+            disabled={isSubmitting}
             size="large"
             className={styles.submitButton}
           >
-            Save Profile
+            {submitLabel}
           </Button>
         </Form.Item>
       </Form>
