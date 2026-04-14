@@ -6,7 +6,7 @@ export interface FitnessBasicInfo {
   weight: number;
   height: number;
   goalWeight: number;
-  timePerDay: number;
+  timePerDay: string;
 }
 
 export type FitnessFormData = FitnessBasicInfo;
