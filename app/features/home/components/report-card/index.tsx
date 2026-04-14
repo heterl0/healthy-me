@@ -48,11 +48,14 @@ function ReportCard({ data }: Props) {
 
   const startWeight = basicInfo.weight;
   const currentWeight =
-    weightData.length > 0 ? weightData[weightData.length - 1].weight : startWeight;
+    weightData.length > 0
+      ? weightData[weightData.length - 1].weight
+      : startWeight;
   const goalWeight = report.weight_progress.goal_weight;
   const totalNeed = Math.max(0, startWeight - goalWeight);
   const done = Math.max(0, startWeight - currentWeight);
-  const timelineProgress = totalNeed > 0 ? Math.min(100, (done / totalNeed) * 100) : 100;
+  const timelineProgress =
+    totalNeed > 0 ? Math.min(100, (done / totalNeed) * 100) : 100;
   const estimatedWeeks = report.weight_progress.weekly_data.length;
 
   const exerciseColumns = [
@@ -207,8 +210,8 @@ function ReportCard({ data }: Props) {
       <Card className={styles.sectionCard} title="Timeline to Goal">
         <Paragraph className={styles.timelineText}>
           Estimated duration: <strong>{estimatedWeeks} weeks</strong>. Current
-          progress is <strong>{timelineProgress.toFixed(1)}%</strong> toward your
-          target weight.
+          progress is <strong>{timelineProgress.toFixed(1)}%</strong> toward
+          your target weight.
         </Paragraph>
         <Progress percent={Number(timelineProgress.toFixed(1))} />
       </Card>
