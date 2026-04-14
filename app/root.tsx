@@ -6,9 +6,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { Provider } from "react-redux";
+import { Alert, ConfigProvider, Result, Typography, theme } from "antd";
 
 import type { Route } from "./+types/root";
-import "./app.css";
+import { AntdApp } from "./antd-app";
+import { store } from "./store";
+import "./app.scss";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -16,10 +20,6 @@ export const links: Route.LinksFunction = () => [
     rel: "preconnect",
     href: "https://fonts.gstatic.com",
     crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
 
@@ -42,7 +42,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <Provider store={store}>
+      <AntdApp />
+    </Provider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -62,14 +66,31 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
+      <div style={{ padding: 24, maxWidth: 720, margin: "0 auto" }}>
+        <Result status="error" title={message} subTitle={details} />
+        {stack ? (
+          <Alert
+            type="warning"
+            showIcon
+            message="Stack trace (dev only)"
+            description={
+              <Typography.Paragraph>
+                <pre
+                  style={{
+                    overflow: "auto",
+                    margin: 0,
+                    whiteSpace: "pre-wrap",
+                    fontSize: 12,
+                  }}
+                >
+                  <code>{stack}</code>
+                </pre>
+              </Typography.Paragraph>
+            }
+          />
+        ) : null}
+      </div>
+    </ConfigProvider>
   );
 }

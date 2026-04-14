@@ -1,0 +1,41 @@
+.page {
+  min-height: 100vh;
+  padding: 48px 24px 64px;
+  background: linear-gradient(180deg, #f5f7fa 0%, #ffffff 38%);
+}
+
+.brandRow {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logoWrap {
+  max-width: 420px;
+  margin: 0 auto 16px;
+  padding: 8px;
+}
+
+.logoLight,
+.logoDark {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.logoDark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .logoLight {
+    display: none;
+  }
+
+  .logoDark {
+    display: block;
+  }
+}
+
+.chartCard {
+  margin-top: 24px;
+}

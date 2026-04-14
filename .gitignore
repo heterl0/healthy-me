@@ -5,3 +5,6 @@
 # React Router
 /.react-router/
 /build/
+
+# Cursor — local plan markdown (keep plans out of git)
+.cursor/plans/
