@@ -47,7 +47,9 @@ const resources = [
 export function Welcome() {
   const appName = useAppSelector((s) => s.app.appName);
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY ?? "";
-  const [prompt, setPrompt] = useState("Give one short tip for staying hydrated.");
+  const [prompt, setPrompt] = useState(
+    "Give one short tip for staying hydrated.",
+  );
   const [reply, setReply] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -108,7 +110,11 @@ export function Welcome() {
               dataSource={resources}
               renderItem={(item) => (
                 <List.Item>
-                  <Typography.Link href={item.href} target="_blank" rel="noreferrer">
+                  <Typography.Link
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     {item.text}
                   </Typography.Link>
                 </List.Item>
@@ -133,8 +139,8 @@ export function Welcome() {
           <Card title="Gemini (client demo)">
             <Space direction="vertical" style={{ width: "100%" }} size="middle">
               <Typography.Text type="secondary">
-                Uses <Typography.Text code>VITE_GEMINI_API_KEY</Typography.Text>.
-                The key ships in the browser bundle—fine for this demo only.
+                Uses <Typography.Text code>VITE_GEMINI_API_KEY</Typography.Text>
+                . The key ships in the browser bundle—fine for this demo only.
               </Typography.Text>
               <Input.TextArea
                 value={prompt}
@@ -145,9 +151,7 @@ export function Welcome() {
               <Button type="primary" onClick={onAskGemini} disabled={loading}>
                 Ask Gemini
               </Button>
-              {loading ? (
-                <Spin tip="Calling Gemini…" />
-              ) : null}
+              {loading ? <Spin tip="Calling Gemini…" /> : null}
               {error ? <Alert type="error" showIcon message={error} /> : null}
               {reply ? (
                 <Alert

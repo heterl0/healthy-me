@@ -22,11 +22,11 @@ cp .env.example .env
 
 ## Scripts
 
-| Command           | Description                          |
-| ----------------- | ------------------------------------ |
-| `npm run dev`     | Dev server with HMR                  |
-| `npm run build`   | Production build (client + server)   |
-| `npm run start`   | Run the production server locally    |
+| Command             | Description                        |
+| ------------------- | ---------------------------------- |
+| `npm run dev`       | Dev server with HMR                |
+| `npm run build`     | Production build (client + server) |
+| `npm run start`     | Run the production server locally  |
 | `npm run typecheck` | Route typegen + `tsc`              |
 
 ## Stack
