@@ -25,7 +25,7 @@ export default function FitnessForm({ onSubmit }: Props) {
       };
       onSubmit(formData);
       message.success("Profile updated successfully!");
-      form.resetFields();
+      // form.resetFields();
     } catch (_error) {
       message.error("Failed to update profile");
     } finally {

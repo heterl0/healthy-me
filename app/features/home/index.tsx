@@ -5,6 +5,7 @@ import { generateGeminiOutput, generatePrompt } from "~/lib/gemini";
 import { FitnessSchema } from "~/shared/schema/fitness";
 import { useAppDispatch } from "~/store/hooks";
 import { addReport } from "~/store/appSlice";
+
 export function meta() {
   return [
     { title: "Healthy Me - Home Page" },
@@ -22,8 +23,9 @@ export default function Home() {
     const prompt = generatePrompt(basicInfo);
     const response = await generateGeminiOutput(prompt, {
       responseMimeType: "application/json",
-      responseJsonSchema: FitnessSchema,
+      responseJsonSchema: FitnessSchema.toJSONSchema(),
     });
+    console.log(response);
     const reportData = FitnessSchema.parse(JSON.parse(response));
     const report: FitnessReport = {
       id: crypto.randomUUID(),

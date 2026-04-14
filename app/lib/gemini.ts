@@ -1,7 +1,7 @@
 import { GoogleGenAI, type GenerationConfig } from "@google/genai";
 import type { FitnessBasicInfo } from "~/shared/types";
 
-const DEFAULT_MODEL = "gemini-3-flash-preview";
+const DEFAULT_MODEL = "gemini-2.5-flash";
 
 export async function generateGeminiOutput(
   prompt: string,
