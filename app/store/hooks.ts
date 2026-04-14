@@ -6,7 +6,6 @@ import type { ReportState } from "./appSlice";
 export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
 
-export const useReportDispatch = useDispatch<AppDispatch>();
-export const useReportSelector = useSelector<RootState, ReportState>(
-  ({ app }) => app,
-);
+export const useReportDispatch = () => useAppDispatch();
+export const useReportSelector = () =>
+  useAppSelector<ReportState>(({ app }) => app);

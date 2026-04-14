@@ -1,3 +1,5 @@
+import type { FitnessReportSchema } from "../schema/fitness";
+
 export interface FitnessBasicInfo {
   name: string;
   age: number;
@@ -12,7 +14,7 @@ export type FitnessFormData = FitnessBasicInfo;
 export interface FitnessReport {
   id: string;
   basicInfo: FitnessBasicInfo;
-  report: Record<string, unknown>;
+  report?: FitnessReportSchema;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }

@@ -13,7 +13,7 @@ import {
 } from "antd";
 import { useCallback, useState } from "react";
 
-import { generateGeminiReply } from "~/lib/gemini";
+import { generateGeminiOutput } from "~/lib/gemini";
 
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
@@ -61,7 +61,7 @@ export function Welcome() {
     }
     setLoading(true);
     try {
-      const text = await generateGeminiReply(apiKey.trim(), prompt.trim());
+      const text = await generateGeminiOutput(prompt.trim());
       setReply(text);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Gemini request failed.");
