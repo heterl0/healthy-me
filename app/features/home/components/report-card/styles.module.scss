@@ -7,6 +7,10 @@
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -50,6 +54,11 @@
 }
 
 @media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .reportCard {
     max-width: 100%;
   }

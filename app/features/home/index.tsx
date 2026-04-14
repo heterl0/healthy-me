@@ -9,6 +9,7 @@ import { generateGeminiOutput, generatePrompt } from "~/lib/gemini";
 import { FitnessSchema } from "~/shared/schema/fitness";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { addReport } from "~/store/appSlice";
+import { mockReport } from "~/MOCK/data";
 
 export function meta() {
   return [
@@ -24,7 +25,7 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const { reportList } = useAppSelector(({ app }) => app);
   const [currentReport, setCurrentReport] = useState<FitnessReport | null>(
-    null,
+    mockReport,
   );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
