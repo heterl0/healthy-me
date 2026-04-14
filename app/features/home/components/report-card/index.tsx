@@ -44,6 +44,13 @@ function ReportCard({ data }: Props) {
   const weightData = report.weight_progress.weekly_data.map((item) => ({
     week: item.week,
     weight: item.weight,
+    category: "progress",
+  }));
+
+  const goalData = report.weight_progress.weekly_data.map((item) => ({
+    week: item.week,
+    weight: report.weight_progress.goal_weight,
+    category: "goal",
   }));
 
   const startWeight = basicInfo.weight;
@@ -102,13 +109,13 @@ function ReportCard({ data }: Props) {
                 data={nutritionData}
                 angleField="value"
                 colorField="type"
-                innerRadius={0.62}
                 label={{
                   text: "value",
+                  position: "outside",
                   formatter: (v: string | number) => `${v}%`,
                 }}
                 legend={{ position: "bottom" }}
-                tooltip={{ items: [{ channel: "y", name: "Percent" }] }}
+                tooltip={{ items: [{ channel: "y", name: "percent" }] }}
               />
             </div>
           </Card>
@@ -120,7 +127,7 @@ function ReportCard({ data }: Props) {
                 data={activityData}
                 angleField="value"
                 colorField="type"
-                innerRadius={0.62}
+                innerRadius={0.38}
                 label={{
                   text: "value",
                   formatter: (v: string | number) => `${v}%`,
@@ -154,7 +161,7 @@ function ReportCard({ data }: Props) {
           <Card className={styles.sectionCard} title="Weight Progress">
             <div className={styles.chartWrap}>
               <Line
-                data={weightData}
+                data={[...weightData, ...goalData]}
                 xField="week"
                 yField="weight"
                 point
@@ -162,14 +169,35 @@ function ReportCard({ data }: Props) {
                   y: { title: "Weight (kg)" },
                   x: { title: "Week" },
                 }}
-                annotations={[
-                  {
-                    type: "lineY",
-                    y: goalWeight,
-                    style: { stroke: "#ff4d4f", lineDash: [4, 4] },
-                    text: { content: `Goal ${goalWeight}kg`, position: "left" },
+                style={{
+                  lineWidth: 2,
+                  lineDash: (data: { category: string }[]) => {
+                    if (data[0].category === "goal") return [4, 4];
                   },
-                ]}
+                  opacity: (data: { type: string }[]) => {
+                    if (data[0].type !== "goal") return 0.5;
+                  },
+                }}
+                scale={{
+                  y: {
+                    domainMin: Math.max(
+                      Math.min(
+                        ...weightData.map((item) => item.weight),
+                        ...goalData.map((item) => item.weight),
+                      ) - 10,
+                      0,
+                    ),
+                    domainMax: Math.min(
+                      Math.max(
+                        ...weightData.map((item) => item.weight),
+                        ...goalData.map((item) => item.weight),
+                      ) + 10,
+                      150,
+                    ),
+                  },
+                }}
+                legend={{ size: false }}
+                colorField="category"
               />
             </div>
           </Card>
@@ -179,7 +207,7 @@ function ReportCard({ data }: Props) {
       <Card className={styles.sectionCard} title="Exercise Effort">
         <div className={styles.chartWrapLarge}>
           <DualAxes
-            data={[exerciseData, exerciseData]}
+            data={exerciseData}
             xField="day"
             children={[
               {
@@ -191,7 +219,7 @@ function ReportCard({ data }: Props) {
                 type: "line",
                 yField: "minutes",
                 axis: { y: { position: "right", title: "Minutes" } },
-                style: { stroke: "#1677ff", lineWidth: 2 },
+                style: { lineWidth: 2, lineDash: [4, 4] },
               },
             ]}
             legend={{ color: { position: "bottom" } }}
