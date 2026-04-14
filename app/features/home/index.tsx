@@ -1,10 +1,12 @@
 import type { FitnessBasicInfo, FitnessReport } from "~/shared/types";
 import FitnessForm from "./components/form-fitness";
+import ReportCard from "./components/report-card";
 import styles from "./styles.module.scss";
 import { generateGeminiOutput, generatePrompt } from "~/lib/gemini";
 import { FitnessSchema } from "~/shared/schema/fitness";
-import { useAppDispatch } from "~/store/hooks";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import { addReport } from "~/store/appSlice";
+import { mockReport } from "~/MOCK/data";
 
 export function meta() {
   return [
@@ -18,6 +20,7 @@ export function meta() {
 
 export default function Home() {
   const dispatch = useAppDispatch();
+  const { report, reportList } = useAppSelector(({ app }) => app);
 
   async function onSubmit(basicInfo: FitnessBasicInfo) {
     const prompt = generatePrompt(basicInfo);
@@ -39,7 +42,8 @@ export default function Home() {
 
   return (
     <div className={styles.homeContainer}>
-      <FitnessForm onSubmit={onSubmit} />
+      {/* <FitnessForm onSubmit={onSubmit} /> */}
+      <ReportCard data={mockReport} />
     </div>
   );
 }

@@ -1,6 +1,9 @@
 .homeContainer {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 24px;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 24px 16px 48px;
+  background: #f5f7fb;
 }
