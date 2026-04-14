@@ -23,7 +23,9 @@ export function meta() {
 export default function Home() {
   const dispatch = useAppDispatch();
   const { reportList } = useAppSelector(({ app }) => app);
-  const [currentReport, setCurrentReport] = useState<FitnessReport | null>(null);
+  const [currentReport, setCurrentReport] = useState<FitnessReport | null>(
+    null,
+  );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   async function onSubmit(basicInfo: FitnessBasicInfo) {
