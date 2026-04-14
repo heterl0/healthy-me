@@ -218,8 +218,9 @@ function ReportCard({ data }: Props) {
               {
                 type: "line",
                 yField: "minutes",
+                point: true,
                 axis: { y: { position: "right", title: "Minutes" } },
-                style: { lineWidth: 2, lineDash: [4, 4] },
+                style: { lineWidth: 2, lineDash: [4, 4], stroke: "#b7e4c7" },
               },
             ]}
             legend={{ color: { position: "bottom" } }}
