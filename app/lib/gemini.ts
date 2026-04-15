@@ -1,7 +1,11 @@
 import { GoogleGenAI, type GenerationConfig } from "@google/genai";
 import type { FitnessBasicInfo } from "~/shared/types";
 
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = [
+  "gemini-2.5-flash",
+  "gemini-3.1-flash-lite-preview",
+  "gemini-3-flash-preview",
+];
 
 export async function generateGeminiOutput(
   prompt: string,
@@ -9,7 +13,7 @@ export async function generateGeminiOutput(
 ): Promise<string> {
   const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   const response = await ai.models.generateContent({
-    model: DEFAULT_MODEL,
+    model: DEFAULT_MODEL[Math.floor(Math.random() * DEFAULT_MODEL.length)],
     contents: prompt,
     config,
   });
