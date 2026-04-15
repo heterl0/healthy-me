@@ -26,6 +26,7 @@ import {
   loadReportsFromStorage,
   saveReportsToStorage,
 } from "./hooks/report-list-storage";
+import ReportCardLoading from "./components/report-card/components/loading";
 
 const ReportCard = lazy(() => import("./components/report-card"));
 
@@ -224,13 +225,7 @@ export default function Home() {
                     layout: { duration: 0.4 },
                   }}
                 >
-                  <Suspense
-                    fallback={
-                      <div className={styles.reportLoadingFallback}>
-                        <Skeleton active paragraph={{ rows: 8 }} />
-                      </div>
-                    }
-                  >
+                  <Suspense fallback={<ReportCardLoading />}>
                     <ReportCard data={currentReport} />
                   </Suspense>
                 </motion.div>

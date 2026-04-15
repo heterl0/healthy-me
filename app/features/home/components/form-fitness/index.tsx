@@ -52,7 +52,7 @@ function FitnessForm({
           name="name"
           rules={[{ required: true, message: "Please enter your name" }]}
         >
-          <Input placeholder="John Doe" className={styles.input} />
+          <Input placeholder="Hieu Le Van" className={styles.input} />
         </Form.Item>
 
         <div className={styles.formRow}>

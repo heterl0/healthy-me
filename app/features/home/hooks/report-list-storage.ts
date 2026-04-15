@@ -36,7 +36,9 @@ function isValidReportItem(value: unknown): value is FitnessReport {
 }
 
 function canUseStorage(): boolean {
-  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+  return (
+    typeof window !== "undefined" && typeof window.localStorage !== "undefined"
+  );
 }
 
 export function loadReportsFromStorage(): FitnessReport[] {
