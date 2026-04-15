@@ -56,44 +56,6 @@
   border-left: 1px solid #eceff3;
 }
 
-.historyPanel {
-  height: 100%;
-  padding: 16px 12px 12px;
-}
-
-.historyHeader {
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #111827;
-}
-
-.historyTitle {
-  margin: 0 !important;
-}
-
-.historyItem {
-  padding: 10px !important;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.historyItem:hover {
-  background: #f6f8fb;
-}
-
-.historyItemActive {
-  background: #edf5ff;
-}
-
-.historyMeta {
-  width: 100%;
-}
-
 .mobileHistoryDrawer {
   :global(.ant-drawer-header-title) {
     align-items: center;

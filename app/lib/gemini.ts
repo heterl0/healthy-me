@@ -45,7 +45,7 @@ export function generatePrompt(basicInfo: FitnessBasicInfo): string {
   3. **Weight Progress:** Project a realistic (4 - 12) weeks weight loss/gain trajectory based on the goal weight and daily exercise time.
   4. **Body Composition:** Estimate realistic percentages based on the user's current weight and height (BMI proxy).
   5. **Exercise Type:** The exercise type should be one of the following: \`cardio\`, \`strength\`, \`stretching\`, \`yoga\`, \`rest\`. Duration could be dynamic in minutes.
-  6. **Exercise Effort:** Date start from today ${new Date().toISOString().split("T")[0]} and follow with the number of days equal to weeks suggestions (day by day) to create realistic calendar.
+  6. **Exercise Effort:** Date start from today ${new Date().toISOString().split("T")[0]} and suggestions 14 days for the calendar.
   7. **Meal Plan:** The meal plan should be a balanced plan for the user's daily life. The total calories should be equal to the user's daily calorie intake output is number of calories.
   8. **Output Format:** Return ONLY a valid JSON object. No markdown prose, no explanations.
 

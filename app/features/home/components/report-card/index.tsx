@@ -56,6 +56,7 @@ function ReportCard({ data }: Props) {
     exerciseColumns,
     mealPlanData,
   } = useReportCardData({ basicInfo, report });
+
   const [activeExerciseMonth, setActiveExerciseMonth] = useState<string>("");
 
   const exerciseMonthKeys = useMemo(() => {
@@ -83,6 +84,7 @@ function ReportCard({ data }: Props) {
       item.day.startsWith(resolvedExerciseMonth),
     );
   }, [exerciseData, resolvedExerciseMonth]);
+
   const weightScale = useMemo(
     () => ({
       y: {
@@ -186,26 +188,6 @@ function ReportCard({ data }: Props) {
             </Card>
           </Col>
           <Col xs={24} lg={12}>
-            <Card className={styles.sectionCard} title="Activity Composition">
-              <div className={styles.chartWrap}>
-                <Pie
-                  data={activityData}
-                  angleField="value"
-                  colorField="type"
-                  innerRadius={0.38}
-                  label={{
-                    text: "value",
-                    formatter: (v: string | number) => `${v}%`,
-                  }}
-                  legend={{ position: "bottom" }}
-                />
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={12}>
             <Card className={styles.sectionCard} title="Meal Plan">
               <div className={styles.chartWrap}>
                 <Column
@@ -217,7 +199,27 @@ function ReportCard({ data }: Props) {
                   label={{
                     text: "value",
                     position: "outside",
-                    formatter: (v: string | number) => `${v} calories`,
+                    formatter: (v: string | number) => `${v} cal`,
+                  }}
+                  legend={{ position: "bottom" }}
+                />
+              </div>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={12}>
+            <Card className={styles.sectionCard} title="Activity Composition">
+              <div className={styles.chartWrap}>
+                <Pie
+                  data={activityData}
+                  angleField="value"
+                  colorField="type"
+                  innerRadius={0.38}
+                  label={{
+                    text: "value",
+                    formatter: (v: string | number) => `${v}%`,
                   }}
                   legend={{ position: "bottom" }}
                 />
@@ -277,14 +279,14 @@ function ReportCard({ data }: Props) {
             />
           </div>
           <Row gutter={[16, 16]}>
-            <Col xs={24} xl={16}>
+            <Col xs={24} xl={12}>
               <ExerciseCalendar
                 data={exerciseData}
                 activeMonthKey={resolvedExerciseMonth}
                 onMonthChange={setActiveExerciseMonth}
               />
             </Col>
-            <Col xs={24} xl={8}>
+            <Col xs={24} xl={12}>
               <div className={styles.exerciseMonthTable}>
                 <Table
                   className={styles.table}

@@ -9,7 +9,7 @@
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -102,11 +102,11 @@
   min-height: 90px;
   border-radius: 8px;
   border: 1px solid #f0f0f0;
-  padding: 8px;
+  padding: 4px;
 }
 
 .emptyDayCell {
-  background: #fafafa;
+  background: hsl(0, 0%, 95%);
 }
 
 .dayCell {
@@ -122,8 +122,8 @@
 .exerciseBadge {
   display: inline-flex;
   align-self: flex-start;
-  padding: 2px 8px;
-  border-radius: 999px;
+  padding: 2px 4px;
+  border-radius: 4px;
   color: #ffffff;
   font-size: 11px;
   line-height: 1.5;
@@ -161,6 +161,14 @@
 
   .reportCard {
     max-width: 100%;
+
+    :global(.ant-card-body) {
+      padding: 16px;
+    }
+
+    :global(.ant-card-head) {
+      padding: 8px 16px;
+    }
   }
 
   .metrics {

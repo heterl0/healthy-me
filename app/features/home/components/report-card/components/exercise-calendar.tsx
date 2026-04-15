@@ -3,6 +3,7 @@ import { Activity, memo, useEffect, useMemo, useState } from "react";
 import { useIsMobile } from "~/shared/hooks/use-is-mobile";
 import styles from "../styles.module.scss";
 import type { ExerciseDatum } from "../types/chart";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const { Text } = Typography;
 
@@ -200,11 +201,11 @@ function ExerciseCalendar({ data, activeMonthKey, onMonthChange }: Props) {
     <div className={styles.exerciseCalendar}>
       <div className={styles.calendarHeader}>
         <Button onClick={goPrevious} disabled={!canGoPrevious}>
-          Previous month
+          <ChevronLeft size={16} />
         </Button>
         <Text strong>{formatMonthLabel(currentMonth)}</Text>
         <Button onClick={goNext} disabled={!canGoNext}>
-          Next month
+          <ChevronRight size={16} />
         </Button>
       </div>
 
