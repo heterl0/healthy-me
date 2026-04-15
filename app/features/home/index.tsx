@@ -39,10 +39,10 @@ const ReportCard = lazy(() => import("./components/report-card"));
 
 export function meta() {
   return [
-    { title: "Healthy Me AI - Home Page" },
+    { title: "Healthy Me AI" },
     {
       name: "description",
-      content: "Demo stack: React Router, Redux Toolkit, Ant Design, Gemini.",
+      content: "Personalized fitness report generator using AI.",
     },
   ];
 }
