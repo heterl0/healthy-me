@@ -1,7 +1,7 @@
 import { GoogleGenAI, type GenerationConfig } from "@google/genai";
 import type { FitnessBasicInfo } from "~/shared/types";
 
-const DEFAULT_MODEL = [
+export const DEFAULT_MODELS = [
   "gemini-2.5-flash",
   "gemini-3.1-flash-lite-preview",
   "gemini-3-flash-preview",
@@ -9,11 +9,14 @@ const DEFAULT_MODEL = [
 
 export async function generateGeminiOutput(
   prompt: string,
+  model?: string,
   config?: GenerationConfig,
 ): Promise<string> {
   const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   const response = await ai.models.generateContent({
-    model: DEFAULT_MODEL[Math.floor(Math.random() * DEFAULT_MODEL.length)],
+    model:
+      model ??
+      DEFAULT_MODELS[Math.floor(Math.random() * DEFAULT_MODELS.length)],
     contents: prompt,
     config,
   });
@@ -42,8 +45,9 @@ export function generatePrompt(basicInfo: FitnessBasicInfo): string {
   3. **Weight Progress:** Project a realistic (4 - 12) weeks weight loss/gain trajectory based on the goal weight and daily exercise time.
   4. **Body Composition:** Estimate realistic percentages based on the user's current weight and height (BMI proxy).
   5. **Exercise Type:** The exercise type should be one of the following: \`cardio\`, \`strength\`, \`stretching\`, \`yoga\`, \`rest\`. Duration could be dynamic in minutes.
-  6. **Exercise Effort:** Date start from today ${new Date().toISOString().split("T")[0]} and follow with the number of days equal to weeks suggestions to create realistic calendar.
-  7. **Output Format:** Return ONLY a valid JSON object. No markdown prose, no explanations.
+  6. **Exercise Effort:** Date start from today ${new Date().toISOString().split("T")[0]} and follow with the number of days equal to weeks suggestions (day by day) to create realistic calendar.
+  7. **Meal Plan:** The meal plan should be a balanced plan for the user's daily life. The total calories should be equal to the user's daily calorie intake output is number of calories.
+  8. **Output Format:** Return ONLY a valid JSON object. No markdown prose, no explanations.
 
   **Required JSON Structure:**
   \`\`\`json
@@ -62,6 +66,12 @@ export function generatePrompt(basicInfo: FitnessBasicInfo): string {
       "weekly_data": [
         { "week": "Week 1", "weight": number }
       ]
+    },
+    "meal_plan": {
+      "breakfast": number,
+      "lunch": number,
+      "dinner": number,
+      "snacks": number
     },
     "activity_composition": {
       "cardio": number,

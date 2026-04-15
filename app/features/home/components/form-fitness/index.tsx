@@ -68,7 +68,11 @@ function FitnessForm({
             rules={[{ required: true, message: "Please enter your name" }]}
             className={styles.formCol}
           >
-            <Input placeholder="Hieu Le Van" className={styles.input} />
+            <Input
+              disabled={isSubmitting}
+              placeholder="Hieu Le Van"
+              className={styles.input}
+            />
           </Form.Item>
           <Form.Item
             label="Gender"
@@ -76,6 +80,7 @@ function FitnessForm({
             rules={[{ required: true, message: "Please select your gender" }]}
           >
             <Select
+              disabled={isSubmitting}
               options={GENDER_OPTIONS}
               placeholder="Select gender"
               style={{ height: 40 }}
@@ -98,7 +103,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="25" min={1} max={150} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="25"
+              min={1}
+              max={150}
+            />
           </Form.Item>
 
           <Form.Item
@@ -115,7 +125,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="175" min={50} max={250} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="175"
+              min={50}
+              max={250}
+            />
           </Form.Item>
         </div>
 
@@ -134,7 +149,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="75" min={20} max={500} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="75"
+              min={20}
+              max={500}
+            />
           </Form.Item>
 
           <Form.Item
@@ -151,7 +171,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="70" min={20} max={500} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="70"
+              min={20}
+              max={500}
+            />
           </Form.Item>
         </div>
 
@@ -164,6 +189,7 @@ function FitnessForm({
           style={{ marginBottom: "2rem" }}
         >
           <Select
+            disabled={isSubmitting}
             options={TIME_PER_DAY_OPTIONS}
             placeholder="Select duration"
             style={{ height: 40 }}

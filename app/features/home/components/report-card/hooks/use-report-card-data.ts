@@ -24,7 +24,12 @@ export function useReportCardData({ basicInfo, report }: Params) {
     const nutritionData = toPercentData(report.nutrition_breakdown);
     const activityData = toPercentData(report.activity_composition);
     const bodyData = toPercentData(report.body_composition);
-
+    const mealPlanData = Object.entries(report.meal_plan).map(
+      ([type, value]) => ({
+        type: type.replace(/_/g, " "),
+        value,
+      }),
+    );
     const exerciseData: ExerciseDatum[] = report.exercise_effort.map(
       (item) => ({
         day: item.date,
@@ -95,6 +100,7 @@ export function useReportCardData({ basicInfo, report }: Params) {
       timelineProgress,
       estimatedWeeks,
       exerciseColumns,
+      mealPlanData,
     };
   }, [basicInfo, report]);
 }

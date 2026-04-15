@@ -10,7 +10,7 @@ import {
   Table,
   Typography,
 } from "antd";
-import { DualAxes, Line, Pie } from "@ant-design/charts";
+import { Bar, Column, DualAxes, Line, Pie } from "@ant-design/charts";
 import type { FitnessReport } from "~/shared/types";
 import ExerciseCalendar from "./components/exercise-calendar";
 import { useReportExportFilename } from "./hooks/use-report-export-filename";
@@ -54,6 +54,7 @@ function ReportCard({ data }: Props) {
     timelineProgress,
     estimatedWeeks,
     exerciseColumns,
+    mealPlanData,
   } = useReportCardData({ basicInfo, report });
   const [activeExerciseMonth, setActiveExerciseMonth] = useState<string>("");
 
@@ -124,23 +125,46 @@ function ReportCard({ data }: Props) {
       ) : null}
 
       <div ref={reportContentRef}>
-        <Card className={styles.sectionCard} title="Summary">
-          <Paragraph className={styles.summaryText}>{report.summary}</Paragraph>
-          <div className={styles.metrics}>
-            <Text>
-              Current: <strong>{basicInfo.weight}kg</strong>
-            </Text>
-            <Text>
-              Goal: <strong>{basicInfo.goalWeight}kg</strong>
-            </Text>
-            <Text>
-              Height: <strong>{basicInfo.height}cm</strong>
-            </Text>
-            <Text>
-              Age: <strong>{basicInfo.age}</strong>
-            </Text>
-          </div>
-        </Card>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={12}>
+            <Card className={styles.sectionCard} title="Summary">
+              <Paragraph className={styles.summaryText}>
+                {report.summary}
+              </Paragraph>
+              <div className={styles.metrics}>
+                <Text>
+                  Current: <strong>{basicInfo.weight}kg</strong>
+                </Text>
+                <Text>
+                  Goal: <strong>{basicInfo.goalWeight}kg</strong>
+                </Text>
+                <Text>
+                  Height: <strong>{basicInfo.height}cm</strong>
+                </Text>
+                <Text>
+                  Age: <strong>{basicInfo.age}</strong>
+                </Text>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card className={styles.sectionCard} title="Body Composition">
+              <div className={styles.chartWrap}>
+                <Pie
+                  data={bodyData}
+                  angleField="value"
+                  colorField="type"
+                  innerRadius={0.62}
+                  label={{
+                    text: "value",
+                    formatter: (v: string | number) => `${v}%`,
+                  }}
+                  legend={{ position: "bottom" }}
+                />
+              </div>
+            </Card>
+          </Col>
+        </Row>
 
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={12}>
@@ -182,16 +206,18 @@ function ReportCard({ data }: Props) {
 
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={12}>
-            <Card className={styles.sectionCard} title="Body Composition">
+            <Card className={styles.sectionCard} title="Meal Plan">
               <div className={styles.chartWrap}>
-                <Pie
-                  data={bodyData}
-                  angleField="value"
+                <Column
+                  data={mealPlanData}
+                  xField="type"
+                  yField="value"
                   colorField="type"
-                  innerRadius={0.62}
+                  innerRadius={0.38}
                   label={{
                     text: "value",
-                    formatter: (v: string | number) => `${v}%`,
+                    position: "outside",
+                    formatter: (v: string | number) => `${v} calories`,
                   }}
                   legend={{ position: "bottom" }}
                 />
@@ -251,14 +277,14 @@ function ReportCard({ data }: Props) {
             />
           </div>
           <Row gutter={[16, 16]}>
-            <Col xs={24} xl={12}>
+            <Col xs={24} xl={16}>
               <ExerciseCalendar
                 data={exerciseData}
                 activeMonthKey={resolvedExerciseMonth}
                 onMonthChange={setActiveExerciseMonth}
               />
             </Col>
-            <Col xs={24} xl={12}>
+            <Col xs={24} xl={8}>
               <div className={styles.exerciseMonthTable}>
                 <Table
                   className={styles.table}
