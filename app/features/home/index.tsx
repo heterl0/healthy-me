@@ -4,34 +4,25 @@ import {
   Flex,
   Image,
   Layout,
-  List,
-  Space,
-  Tag,
-  Typography,
   message,
 } from "antd";
 import { ClipboardList, History, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import {
-  Activity,
-  Suspense,
-  lazy,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 import {
   DEFAULT_MODELS,
   generateGeminiOutput,
   generatePrompt,
 } from "~/lib/gemini";
 import { useIsDesktop } from "~/shared/hooks/use-is-desktop";
+import { useNavigationGuard } from "~/shared/hooks/use-navigation-guard";
 import { FitnessSchema } from "~/shared/schema/fitness";
 import type { FitnessBasicInfo, FitnessReport } from "~/shared/types";
 import { addReport } from "~/store/appSlice";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
 import FitnessForm from "./components/form-fitness";
 import ReportCardLoading from "./components/report-card/components/loading";
+import HistoryPanel from "./components/history-panel";
 import { useReportToLocalStorage } from "./hooks/use-report-to-local-storage";
 import styles from "./styles.module.scss";
 
@@ -60,6 +51,8 @@ function Home() {
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  useNavigationGuard({ isBlocked: isAnalyzing });
 
   const historyItems = useMemo(() => [...reportList].reverse(), [reportList]);
 
@@ -105,60 +98,6 @@ function Home() {
     setCurrentReport(report);
     setIsHistoryOpen(false);
   }
-
-  const historyContent = useCallback(
-    () => (
-      <div className={styles.historyPanel}>
-        <Activity mode={isDesktop ? "visible" : "hidden"}>
-          <div className={styles.historyHeader}>
-            <History width={16} height={16} />
-            <Typography.Title level={5} className={styles.historyTitle}>
-              History
-            </Typography.Title>
-          </div>
-        </Activity>
-
-        <List
-          locale={{ emptyText: "No reports yet." }}
-          dataSource={historyItems}
-          renderItem={(item) => {
-            const isActive = currentReport?.id === item.id;
-            return (
-              <List.Item
-                key={item.id}
-                className={`${styles.historyItem} ${
-                  isActive ? styles.historyItemActive : ""
-                }`}
-                onClick={() => onSelectReport(item)}
-              >
-                <Space
-                  direction="vertical"
-                  size={4}
-                  className={styles.historyMeta}
-                >
-                  <Typography.Text strong>
-                    {item.basicInfo.name}
-                  </Typography.Text>
-                  <Typography.Text type="secondary">
-                    {new Date(item.createdAt).toLocaleString("en-GB")}
-                  </Typography.Text>
-                  <Space size={8}>
-                    <Tag color={item.report ? "green" : "default"}>
-                      {item.report ? "Report ready" : "Draft"}
-                    </Tag>
-                    <Typography.Text type="secondary">
-                      Goal {item.basicInfo.goalWeight}kg
-                    </Typography.Text>
-                  </Space>
-                </Space>
-              </List.Item>
-            );
-          }}
-        />
-      </div>
-    ),
-    [isDesktop, historyItems, currentReport],
-  );
 
   return (
     <Layout className={styles.homeLayout}>
@@ -251,7 +190,13 @@ function Home() {
             hidden={!isHistoryOpen}
             className={styles.desktopSider}
           >
-            {historyContent()}
+            <HistoryPanel
+              isDesktop={isDesktop}
+              historyItems={historyItems}
+              currentReportId={currentReport?.id}
+              isAnalyzing={isAnalyzing}
+              onSelectReport={onSelectReport}
+            />
           </Layout.Sider>
         ) : (
           <Drawer
@@ -267,7 +212,13 @@ function Home() {
             size="65%"
             onClose={() => setIsHistoryOpen(false)}
           >
-            {historyContent()}
+            <HistoryPanel
+              isDesktop={isDesktop}
+              historyItems={historyItems}
+              currentReportId={currentReport?.id}
+              isAnalyzing={isAnalyzing}
+              onSelectReport={onSelectReport}
+            />
           </Drawer>
         )}
       </Layout>
