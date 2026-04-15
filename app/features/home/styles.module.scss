@@ -64,6 +64,12 @@
 
 .historyHeader {
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
 }
 
 .historyTitle {

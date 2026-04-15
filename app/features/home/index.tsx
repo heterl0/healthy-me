@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Activity, useMemo, useState } from "react";
 import {
   Button,
   Drawer,
@@ -9,9 +9,11 @@ import {
   Typography,
   Grid,
   message,
+  Image,
+  Flex,
 } from "antd";
 import { AnimatePresence, motion } from "motion/react";
-import { Activity, ClipboardList, History, Menu } from "lucide-react";
+import { ClipboardList, History, Menu } from "lucide-react";
 import type { FitnessBasicInfo, FitnessReport } from "~/shared/types";
 import FitnessForm from "./components/form-fitness";
 import ReportCard from "./components/report-card";
@@ -85,12 +87,15 @@ export default function Home() {
 
   const historyContent = (
     <div className={styles.historyPanel}>
-      <Space className={styles.historyHeader} align="center">
-        <History size={18} />
-        <Typography.Title level={5} className={styles.historyTitle}>
-          History
-        </Typography.Title>
-      </Space>
+      <Activity mode={isDesktop ? "visible" : "hidden"}>
+        <div className={styles.historyHeader}>
+          <History width={16} height={16} />
+          <Typography.Title level={5} className={styles.historyTitle}>
+            History
+          </Typography.Title>
+        </div>
+      </Activity>
+
       <List
         locale={{ emptyText: "No reports yet." }}
         dataSource={historyItems}
@@ -133,8 +138,16 @@ export default function Home() {
     <Layout className={styles.homeLayout}>
       <Layout.Header className={styles.topBar}>
         <button type="button" onClick={onClickLogo} className={styles.brand}>
-          <Activity size={20} />
-          <span>HealthyMe AI</span>
+          {isDesktop ? (
+            <Image
+              src="/logo-full.png"
+              alt="HeathyMe"
+              height={56}
+              preview={false}
+            />
+          ) : (
+            <Image src="/logo.png" alt="HeathyMe" height={40} preview={false} />
+          )}
         </button>
         <Button
           icon={isDesktop ? <History size={16} /> : <Menu size={16} />}
@@ -217,10 +230,10 @@ export default function Home() {
           <Drawer
             className={styles.mobileHistoryDrawer}
             title={
-              <Space align="center">
+              <Flex align="center" gap={8}>
                 <ClipboardList size={16} />
                 <span>History</span>
-              </Space>
+              </Flex>
             }
             open={isHistoryOpen}
             placement="bottom"

@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Button, Select, Card } from "antd";
+import { Form, Input, InputNumber, Button, Select, Card, Image } from "antd";
 import { Activity } from "lucide-react";
 import styles from "./styles.module.scss";
 import type { FitnessFormData } from "~/shared/types";
@@ -31,8 +31,8 @@ export default function FitnessForm({
   return (
     <Card className={styles.formCard}>
       <div className={styles.formHeader}>
-        <Activity className={styles.headerIcon} />
-        <h1 className={styles.title}>Fitness Tracker</h1>
+        <Image src="/logo.png" alt="HeathyMe" height={40} preview={false} />
+        <h1 className={styles.title}>Fitness Report</h1>
       </div>
       <p className={styles.subtitle}>
         {isSubmitting
