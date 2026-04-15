@@ -1,38 +1,41 @@
-import { Activity, Suspense, lazy, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Drawer,
+  Flex,
+  Image,
   Layout,
   List,
   Space,
   Tag,
   Typography,
-  Grid,
   message,
-  Image,
-  Flex,
-  Skeleton,
 } from "antd";
-import { AnimatePresence, motion } from "motion/react";
 import { ClipboardList, History, Menu } from "lucide-react";
-import type { FitnessBasicInfo, FitnessReport } from "~/shared/types";
-import FitnessForm from "./components/form-fitness";
-import styles from "./styles.module.scss";
-import { generateGeminiOutput, generatePrompt } from "~/lib/gemini";
-import { FitnessSchema } from "~/shared/schema/fitness";
-import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { addReport, setReportList } from "~/store/appSlice";
+import { AnimatePresence, motion } from "motion/react";
 import {
-  loadReportsFromStorage,
-  saveReportsToStorage,
-} from "./hooks/report-list-storage";
+  Activity,
+  Suspense,
+  lazy,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
+import { generateGeminiOutput, generatePrompt } from "~/lib/gemini";
+import { useIsDesktop } from "~/shared/hooks/use-is-desktop";
+import { FitnessSchema } from "~/shared/schema/fitness";
+import type { FitnessBasicInfo, FitnessReport } from "~/shared/types";
+import { addReport } from "~/store/appSlice";
+import { useAppDispatch, useAppSelector } from "~/store/hooks";
+import FitnessForm from "./components/form-fitness";
 import ReportCardLoading from "./components/report-card/components/loading";
+import { useReportToLocalStorage } from "./hooks/use-report-to-local-storage";
+import styles from "./styles.module.scss";
 
 const ReportCard = lazy(() => import("./components/report-card"));
 
 export function meta() {
   return [
-    { title: "Healthy Me - Home Page" },
+    { title: "Healthy Me AI - Home Page" },
     {
       name: "description",
       content: "Demo stack: React Router, Redux Toolkit, Ant Design, Gemini.",
@@ -40,36 +43,21 @@ export function meta() {
   ];
 }
 
-export default function Home() {
-  const { useBreakpoint } = Grid;
-  const screens = useBreakpoint();
-  const isDesktop = !!screens.lg;
+function Home() {
+  const isDesktop = useIsDesktop();
   const dispatch = useAppDispatch();
   const { reportList } = useAppSelector(({ app }) => app);
+
+  useReportToLocalStorage({ reportList });
+
   const [currentReport, setCurrentReport] = useState<FitnessReport | null>(
     null,
   );
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [isStorageHydrated, setIsStorageHydrated] = useState(false);
 
   const historyItems = useMemo(() => [...reportList].reverse(), [reportList]);
-
-  useEffect(() => {
-    const reportsFromStorage = loadReportsFromStorage();
-    if (reportsFromStorage.length > 0) {
-      dispatch(setReportList(reportsFromStorage));
-    }
-    setIsStorageHydrated(true);
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!isStorageHydrated) {
-      return;
-    }
-
-    saveReportsToStorage(reportList);
-  }, [isStorageHydrated, reportList]);
 
   async function onSubmit(basicInfo: FitnessBasicInfo) {
     setIsAnalyzing(true);
@@ -109,53 +97,58 @@ export default function Home() {
     setIsHistoryOpen(false);
   }
 
-  const historyContent = (
-    <div className={styles.historyPanel}>
-      <Activity mode={isDesktop ? "visible" : "hidden"}>
-        <div className={styles.historyHeader}>
-          <History width={16} height={16} />
-          <Typography.Title level={5} className={styles.historyTitle}>
-            History
-          </Typography.Title>
-        </div>
-      </Activity>
+  const historyContent = useCallback(
+    () => (
+      <div className={styles.historyPanel}>
+        <Activity mode={isDesktop ? "visible" : "hidden"}>
+          <div className={styles.historyHeader}>
+            <History width={16} height={16} />
+            <Typography.Title level={5} className={styles.historyTitle}>
+              History
+            </Typography.Title>
+          </div>
+        </Activity>
 
-      <List
-        locale={{ emptyText: "No reports yet." }}
-        dataSource={historyItems}
-        renderItem={(item) => {
-          const isActive = currentReport?.id === item.id;
-          return (
-            <List.Item
-              key={item.id}
-              className={`${styles.historyItem} ${
-                isActive ? styles.historyItemActive : ""
-              }`}
-              onClick={() => onSelectReport(item)}
-            >
-              <Space
-                direction="vertical"
-                size={4}
-                className={styles.historyMeta}
+        <List
+          locale={{ emptyText: "No reports yet." }}
+          dataSource={historyItems}
+          renderItem={(item) => {
+            const isActive = currentReport?.id === item.id;
+            return (
+              <List.Item
+                key={item.id}
+                className={`${styles.historyItem} ${
+                  isActive ? styles.historyItemActive : ""
+                }`}
+                onClick={() => onSelectReport(item)}
               >
-                <Typography.Text strong>{item.basicInfo.name}</Typography.Text>
-                <Typography.Text type="secondary">
-                  {new Date(item.createdAt).toLocaleString("en-GB")}
-                </Typography.Text>
-                <Space size={8}>
-                  <Tag color={item.report ? "green" : "default"}>
-                    {item.report ? "Report ready" : "Draft"}
-                  </Tag>
-                  <Typography.Text type="secondary">
-                    Goal {item.basicInfo.goalWeight}kg
+                <Space
+                  direction="vertical"
+                  size={4}
+                  className={styles.historyMeta}
+                >
+                  <Typography.Text strong>
+                    {item.basicInfo.name}
                   </Typography.Text>
+                  <Typography.Text type="secondary">
+                    {new Date(item.createdAt).toLocaleString("en-GB")}
+                  </Typography.Text>
+                  <Space size={8}>
+                    <Tag color={item.report ? "green" : "default"}>
+                      {item.report ? "Report ready" : "Draft"}
+                    </Tag>
+                    <Typography.Text type="secondary">
+                      Goal {item.basicInfo.goalWeight}kg
+                    </Typography.Text>
+                  </Space>
                 </Space>
-              </Space>
-            </List.Item>
-          );
-        }}
-      />
-    </div>
+              </List.Item>
+            );
+          }}
+        />
+      </div>
+    ),
+    [isDesktop, historyItems, currentReport],
   );
 
   return (
@@ -197,7 +190,7 @@ export default function Home() {
                     type: "spring",
                     visualDuration: 0.35,
                     bounce: 0.2,
-                    layout: { duration: 0.35 },
+                    layout: { duration: 0.2 },
                   }}
                 >
                   <FitnessForm
@@ -249,7 +242,7 @@ export default function Home() {
             hidden={!isHistoryOpen}
             className={styles.desktopSider}
           >
-            {historyContent}
+            {historyContent()}
           </Layout.Sider>
         ) : (
           <Drawer
@@ -265,10 +258,12 @@ export default function Home() {
             size="65%"
             onClose={() => setIsHistoryOpen(false)}
           >
-            {historyContent}
+            {historyContent()}
           </Drawer>
         )}
       </Layout>
     </Layout>
   );
 }
+
+export default Home;
