@@ -59,7 +59,7 @@ function Home() {
 
   const historyItems = useMemo(() => [...reportList].reverse(), [reportList]);
 
-  async function onSubmit(basicInfo: FitnessBasicInfo) {
+  async function handleSubmit(basicInfo: FitnessBasicInfo) {
     setIsAnalyzing(true);
     try {
       const prompt = generatePrompt(basicInfo);
@@ -196,7 +196,7 @@ function Home() {
                   }}
                 >
                   <FitnessForm
-                    onSubmit={onSubmit}
+                    onSubmit={handleSubmit}
                     isSubmitting={isAnalyzing}
                     submitLabel={
                       isAnalyzing

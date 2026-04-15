@@ -7,6 +7,7 @@ export type ExerciseDatum = {
   day: string;
   calories: number;
   minutes: number;
+  exerciseType: "cardio" | "strength" | "stretching" | "yoga" | "rest";
 };
 
 export type WeightDatum = {

@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import {
   Button,
   Card,
@@ -11,6 +11,7 @@ import {
 } from "antd";
 import { DualAxes, Line, Pie } from "@ant-design/charts";
 import type { FitnessReport } from "~/shared/types";
+import ExerciseCalendar from "./components/exercise-calendar";
 import { useReportExportFilename } from "./hooks/use-report-export-filename";
 import { useReportCardData } from "./hooks/use-report-card-data";
 import { useReportPdfExport } from "./hooks/use-report-pdf-export";
@@ -53,6 +54,33 @@ function ReportCard({ data }: Props) {
     estimatedWeeks,
     exerciseColumns,
   } = useReportCardData({ basicInfo, report });
+  const [activeExerciseMonth, setActiveExerciseMonth] = useState<string>("");
+
+  const exerciseMonthKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const item of exerciseData) {
+      const date = new Date(`${item.day}T00:00:00`);
+      if (!Number.isNaN(date.getTime())) {
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        keys.add(key);
+      }
+    }
+    return [...keys].sort();
+  }, [exerciseData]);
+
+  const resolvedExerciseMonth = useMemo(() => {
+    if (!exerciseMonthKeys.length) return "";
+    if (exerciseMonthKeys.includes(activeExerciseMonth))
+      return activeExerciseMonth;
+    return exerciseMonthKeys[0];
+  }, [activeExerciseMonth, exerciseMonthKeys]);
+
+  const exerciseDataInMonth = useMemo(() => {
+    if (!resolvedExerciseMonth) return exerciseData;
+    return exerciseData.filter((item) =>
+      item.day.startsWith(resolvedExerciseMonth),
+    );
+  }, [exerciseData, resolvedExerciseMonth]);
   const weightScale = useMemo(
     () => ({
       y: {
@@ -199,7 +227,7 @@ function ReportCard({ data }: Props) {
                 {
                   type: "interval",
                   yField: "calories",
-                  axis: { y: { title: "Calories" } },
+                  axis: { y: { position: "left", title: "Calories" } },
                 },
                 {
                   type: "line",
@@ -212,14 +240,28 @@ function ReportCard({ data }: Props) {
               legend={{ color: { position: "bottom" } }}
             />
           </div>
-          <Table
-            className={styles.table}
-            rowKey="day"
-            columns={exerciseColumns}
-            dataSource={exerciseData}
-            pagination={false}
-            size="small"
-          />
+          <Row gutter={[16, 16]}>
+            <Col xs={24} xl={12}>
+              <ExerciseCalendar
+                data={exerciseData}
+                activeMonthKey={resolvedExerciseMonth}
+                onMonthChange={setActiveExerciseMonth}
+              />
+            </Col>
+            <Col xs={24} xl={12}>
+              <div className={styles.exerciseMonthTable}>
+                <Table
+                  className={styles.table}
+                  rowKey="day"
+                  columns={exerciseColumns}
+                  dataSource={exerciseDataInMonth}
+                  pagination={false}
+                  size="small"
+                  bordered
+                />
+              </div>
+            </Col>
+          </Row>
         </Card>
 
         <Card className={styles.sectionCard} title="Timeline to Goal">

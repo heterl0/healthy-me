@@ -30,6 +30,7 @@ export function useReportCardData({ basicInfo, report }: Params) {
         day: item.date,
         calories: item.calories_burned,
         minutes: item.duration_minutes,
+        exerciseType: item.exercise_type,
       }),
     );
 
@@ -72,6 +73,11 @@ export function useReportCardData({ basicInfo, report }: Params) {
 
     const exerciseColumns: ExerciseColumn[] = [
       { title: "Date", dataIndex: "day", key: "day" },
+      {
+        title: "Exercise Type",
+        dataIndex: "exerciseType",
+        key: "exerciseType",
+      },
       { title: "Calories Burned", dataIndex: "calories", key: "calories" },
       { title: "Duration (min)", dataIndex: "minutes", key: "minutes" },
     ];

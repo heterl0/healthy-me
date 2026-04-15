@@ -53,6 +53,102 @@
   margin-bottom: 8px;
 }
 
+.exerciseCalendar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.exerciseMonthTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exerciseMonthTableTitle {
+  font-size: 13px;
+}
+
+.weekdayRow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.weekdayCell {
+  text-align: center;
+  font-size: 12px;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.dayCell,
+.emptyDayCell {
+  min-height: 90px;
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+  padding: 8px;
+}
+
+.emptyDayCell {
+  background: #fafafa;
+}
+
+.dayCell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dayNumber {
+  font-size: 13px;
+}
+
+.exerciseBadge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.calendarTooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendarLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;
@@ -70,5 +166,16 @@
   .chartWrap,
   .chartWrapLarge {
     height: 260px;
+  }
+
+  .dayCell,
+  .emptyDayCell {
+    min-height: 52px;
+    padding: 6px;
+  }
+
+  .exerciseBadge {
+    font-size: 10px;
+    padding: 2px 6px;
   }
 }
