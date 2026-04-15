@@ -24,12 +24,18 @@ export function useReportCardData({ basicInfo, report }: Params) {
     const nutritionData = toPercentData(report.nutrition_breakdown);
     const activityData = toPercentData(report.activity_composition);
     const bodyData = toPercentData(report.body_composition);
-
+    const mealPlanData = Object.entries(report.meal_plan).map(
+      ([type, value]) => ({
+        type: type.replace(/_/g, " "),
+        value,
+      }),
+    );
     const exerciseData: ExerciseDatum[] = report.exercise_effort.map(
       (item) => ({
         day: item.date,
         calories: item.calories_burned,
         minutes: item.duration_minutes,
+        exerciseType: item.exercise_type,
       }),
     );
 
@@ -72,6 +78,11 @@ export function useReportCardData({ basicInfo, report }: Params) {
 
     const exerciseColumns: ExerciseColumn[] = [
       { title: "Date", dataIndex: "day", key: "day" },
+      {
+        title: "Exercise Type",
+        dataIndex: "exerciseType",
+        key: "exerciseType",
+      },
       { title: "Calories Burned", dataIndex: "calories", key: "calories" },
       { title: "Duration (min)", dataIndex: "minutes", key: "minutes" },
     ];
@@ -89,6 +100,7 @@ export function useReportCardData({ basicInfo, report }: Params) {
       timelineProgress,
       estimatedWeeks,
       exerciseColumns,
+      mealPlanData,
     };
   }, [basicInfo, report]);
 }

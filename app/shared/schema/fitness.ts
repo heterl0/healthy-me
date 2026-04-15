@@ -8,7 +8,12 @@ export const FitnessSchema = z.object({
     carbs: z.number().min(0).max(100),
     fat: z.number().min(0).max(100),
   }),
-
+  meal_plan: z.object({
+    breakfast: z.number().min(0),
+    lunch: z.number().min(0),
+    dinner: z.number().min(0),
+    snacks: z.number().min(0),
+  }),
   exercise_effort: z.array(
     z.object({
       date: z.string(),

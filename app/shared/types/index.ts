@@ -18,5 +18,6 @@ export interface FitnessReport {
   basicInfo: FitnessBasicInfo;
   report?: FitnessReportSchema;
   createdAt: string;
+  createdBy?: string;
   updatedAt?: string;
 }

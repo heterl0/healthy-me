@@ -1,5 +1,6 @@
-import { memo, useMemo, useRef } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -9,8 +10,9 @@ import {
   Table,
   Typography,
 } from "antd";
-import { DualAxes, Line, Pie } from "@ant-design/charts";
+import { Bar, Column, DualAxes, Line, Pie } from "@ant-design/charts";
 import type { FitnessReport } from "~/shared/types";
+import ExerciseCalendar from "./components/exercise-calendar";
 import { useReportExportFilename } from "./hooks/use-report-export-filename";
 import { useReportCardData } from "./hooks/use-report-card-data";
 import { useReportPdfExport } from "./hooks/use-report-pdf-export";
@@ -37,7 +39,7 @@ function ReportCard({ data }: Props) {
     name: basicInfo.name,
     createdAt,
   });
-  const { exportPdf, isExporting } = useReportPdfExport({
+  const { exportPdf, isExporting, error } = useReportPdfExport({
     targetRef: reportContentRef,
     filename,
   });
@@ -52,7 +54,35 @@ function ReportCard({ data }: Props) {
     timelineProgress,
     estimatedWeeks,
     exerciseColumns,
+    mealPlanData,
   } = useReportCardData({ basicInfo, report });
+  const [activeExerciseMonth, setActiveExerciseMonth] = useState<string>("");
+
+  const exerciseMonthKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const item of exerciseData) {
+      const date = new Date(`${item.day}T00:00:00`);
+      if (!Number.isNaN(date.getTime())) {
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        keys.add(key);
+      }
+    }
+    return [...keys].sort();
+  }, [exerciseData]);
+
+  const resolvedExerciseMonth = useMemo(() => {
+    if (!exerciseMonthKeys.length) return "";
+    if (exerciseMonthKeys.includes(activeExerciseMonth))
+      return activeExerciseMonth;
+    return exerciseMonthKeys[0];
+  }, [activeExerciseMonth, exerciseMonthKeys]);
+
+  const exerciseDataInMonth = useMemo(() => {
+    if (!resolvedExerciseMonth) return exerciseData;
+    return exerciseData.filter((item) =>
+      item.day.startsWith(resolvedExerciseMonth),
+    );
+  }, [exerciseData, resolvedExerciseMonth]);
   const weightScale = useMemo(
     () => ({
       y: {
@@ -84,25 +114,57 @@ function ReportCard({ data }: Props) {
           Export PDF
         </Button>
       </div>
+      {error ? (
+        <Alert
+          className={styles.exportError}
+          type="error"
+          showIcon
+          message="PDF export failed"
+          description={error.message}
+        />
+      ) : null}
 
       <div ref={reportContentRef}>
-        <Card className={styles.sectionCard} title="Summary">
-          <Paragraph className={styles.summaryText}>{report.summary}</Paragraph>
-          <div className={styles.metrics}>
-            <Text>
-              Current: <strong>{basicInfo.weight}kg</strong>
-            </Text>
-            <Text>
-              Goal: <strong>{basicInfo.goalWeight}kg</strong>
-            </Text>
-            <Text>
-              Height: <strong>{basicInfo.height}cm</strong>
-            </Text>
-            <Text>
-              Age: <strong>{basicInfo.age}</strong>
-            </Text>
-          </div>
-        </Card>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={12}>
+            <Card className={styles.sectionCard} title="Summary">
+              <Paragraph className={styles.summaryText}>
+                {report.summary}
+              </Paragraph>
+              <div className={styles.metrics}>
+                <Text>
+                  Current: <strong>{basicInfo.weight}kg</strong>
+                </Text>
+                <Text>
+                  Goal: <strong>{basicInfo.goalWeight}kg</strong>
+                </Text>
+                <Text>
+                  Height: <strong>{basicInfo.height}cm</strong>
+                </Text>
+                <Text>
+                  Age: <strong>{basicInfo.age}</strong>
+                </Text>
+              </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card className={styles.sectionCard} title="Body Composition">
+              <div className={styles.chartWrap}>
+                <Pie
+                  data={bodyData}
+                  angleField="value"
+                  colorField="type"
+                  innerRadius={0.62}
+                  label={{
+                    text: "value",
+                    formatter: (v: string | number) => `${v}%`,
+                  }}
+                  legend={{ position: "bottom" }}
+                />
+              </div>
+            </Card>
+          </Col>
+        </Row>
 
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={12}>
@@ -144,16 +206,18 @@ function ReportCard({ data }: Props) {
 
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={12}>
-            <Card className={styles.sectionCard} title="Body Composition">
+            <Card className={styles.sectionCard} title="Meal Plan">
               <div className={styles.chartWrap}>
-                <Pie
-                  data={bodyData}
-                  angleField="value"
+                <Column
+                  data={mealPlanData}
+                  xField="type"
+                  yField="value"
                   colorField="type"
-                  innerRadius={0.62}
+                  innerRadius={0.38}
                   label={{
                     text: "value",
-                    formatter: (v: string | number) => `${v}%`,
+                    position: "outside",
+                    formatter: (v: string | number) => `${v} calories`,
                   }}
                   legend={{ position: "bottom" }}
                 />
@@ -199,7 +263,7 @@ function ReportCard({ data }: Props) {
                 {
                   type: "interval",
                   yField: "calories",
-                  axis: { y: { title: "Calories" } },
+                  axis: { y: { position: "left", title: "Calories" } },
                 },
                 {
                   type: "line",
@@ -212,14 +276,28 @@ function ReportCard({ data }: Props) {
               legend={{ color: { position: "bottom" } }}
             />
           </div>
-          <Table
-            className={styles.table}
-            rowKey="day"
-            columns={exerciseColumns}
-            dataSource={exerciseData}
-            pagination={false}
-            size="small"
-          />
+          <Row gutter={[16, 16]}>
+            <Col xs={24} xl={16}>
+              <ExerciseCalendar
+                data={exerciseData}
+                activeMonthKey={resolvedExerciseMonth}
+                onMonthChange={setActiveExerciseMonth}
+              />
+            </Col>
+            <Col xs={24} xl={8}>
+              <div className={styles.exerciseMonthTable}>
+                <Table
+                  className={styles.table}
+                  rowKey="day"
+                  columns={exerciseColumns}
+                  dataSource={exerciseDataInMonth}
+                  pagination={false}
+                  size="small"
+                  bordered
+                />
+              </div>
+            </Col>
+          </Row>
         </Card>
 
         <Card className={styles.sectionCard} title="Timeline to Goal">

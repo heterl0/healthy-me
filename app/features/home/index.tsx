@@ -20,7 +20,11 @@ import {
   useMemo,
   useState,
 } from "react";
-import { generateGeminiOutput, generatePrompt } from "~/lib/gemini";
+import {
+  DEFAULT_MODELS,
+  generateGeminiOutput,
+  generatePrompt,
+} from "~/lib/gemini";
 import { useIsDesktop } from "~/shared/hooks/use-is-desktop";
 import { FitnessSchema } from "~/shared/schema/fitness";
 import type { FitnessBasicInfo, FitnessReport } from "~/shared/types";
@@ -59,11 +63,13 @@ function Home() {
 
   const historyItems = useMemo(() => [...reportList].reverse(), [reportList]);
 
-  async function onSubmit(basicInfo: FitnessBasicInfo) {
+  async function handleSubmit(basicInfo: FitnessBasicInfo) {
     setIsAnalyzing(true);
     try {
       const prompt = generatePrompt(basicInfo);
-      const response = await generateGeminiOutput(prompt, {
+      const model =
+        DEFAULT_MODELS[Math.floor(Math.random() * DEFAULT_MODELS.length)];
+      const response = await generateGeminiOutput(prompt, model, {
         responseMimeType: "application/json",
         responseJsonSchema: FitnessSchema.toJSONSchema(),
         temperature: 0.2,
@@ -76,6 +82,7 @@ function Home() {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         report: reportData,
+        createdBy: model,
       };
       dispatch(addReport(nextReport));
       setCurrentReport(nextReport);
@@ -196,7 +203,7 @@ function Home() {
                   }}
                 >
                   <FitnessForm
-                    onSubmit={onSubmit}
+                    onSubmit={handleSubmit}
                     isSubmitting={isAnalyzing}
                     submitLabel={
                       isAnalyzing

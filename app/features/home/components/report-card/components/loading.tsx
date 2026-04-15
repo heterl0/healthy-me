@@ -1,18 +1,20 @@
-import { Flex, Skeleton } from "antd";
-
+import { Card, Flex, Skeleton } from "antd";
+import styles from "../styles.module.scss";
 function ReportCardLoading() {
   return (
-    <Flex
-      justify="center"
-      align="center"
-      style={{
-        flexDirection: "column",
-      }}
-    >
-      <Skeleton active paragraph={{ rows: 8 }} />
-      <Skeleton active paragraph={{ rows: 8 }} />
-      <Skeleton active paragraph={{ rows: 8 }} />
-    </Flex>
+    <Card className={styles.reportCard}>
+      <Flex
+        justify="center"
+        align="center"
+        style={{
+          flexDirection: "column",
+        }}
+      >
+        <Skeleton active paragraph={{ rows: 8 }} />
+        <Skeleton active paragraph={{ rows: 8 }} />
+        <Skeleton active paragraph={{ rows: 8 }} />
+      </Flex>
+    </Card>
   );
 }
 

@@ -1,12 +1,6 @@
-import { Form, Input, InputNumber, Button, Select, Card, Image } from "antd";
+import { Button, Card, Form, Image, Input, InputNumber, Select } from "antd";
+import type { FitnessBasicInfo, FitnessFormData } from "~/shared/types";
 import styles from "./styles.module.scss";
-import type { FitnessFormData } from "~/shared/types";
-
-type Props = {
-  onSubmit: (data: FitnessFormData) => Promise<void>;
-  isSubmitting?: boolean;
-  submitLabel?: string;
-};
 
 const TIME_PER_DAY_OPTIONS = [
   { label: "15 minutes", value: "15" },
@@ -17,6 +11,17 @@ const TIME_PER_DAY_OPTIONS = [
   { label: "120 minutes", value: "120" },
 ];
 
+const GENDER_OPTIONS = [
+  { label: "Male", value: "Male" },
+  { label: "Female", value: "Female" },
+];
+
+type Props = {
+  onSubmit: (data: FitnessFormData) => Promise<void>;
+  isSubmitting?: boolean;
+  submitLabel?: string;
+};
+
 function FitnessForm({
   onSubmit,
   isSubmitting = false,
@@ -25,7 +30,16 @@ function FitnessForm({
   const [form] = Form.useForm<FitnessFormData>();
 
   const handleSubmit = async (values: FitnessFormData) => {
-    await onSubmit(values);
+    const payload: FitnessBasicInfo = {
+      ...values,
+      target:
+        values.goalWeight > values.weight
+          ? "Weight Gain"
+          : values.goalWeight < values.weight
+            ? "Weight Loss"
+            : "Maintenance",
+    };
+    await onSubmit(payload);
   };
 
   return (
@@ -47,13 +61,32 @@ function FitnessForm({
         className={styles.form}
         autoComplete="off"
       >
-        <Form.Item
-          label="Full Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter your name" }]}
-        >
-          <Input placeholder="Hieu Le Van" className={styles.input} />
-        </Form.Item>
+        <div className={styles.formRow}>
+          <Form.Item
+            label="Full Name"
+            name="name"
+            rules={[{ required: true, message: "Please enter your name" }]}
+            className={styles.formCol}
+          >
+            <Input
+              disabled={isSubmitting}
+              placeholder="Hieu Le Van"
+              className={styles.input}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Gender"
+            name="gender"
+            rules={[{ required: true, message: "Please select your gender" }]}
+          >
+            <Select
+              disabled={isSubmitting}
+              options={GENDER_OPTIONS}
+              placeholder="Select gender"
+              style={{ height: 40 }}
+            />
+          </Form.Item>
+        </div>
 
         <div className={styles.formRow}>
           <Form.Item
@@ -70,7 +103,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="25" min={1} max={150} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="25"
+              min={1}
+              max={150}
+            />
           </Form.Item>
 
           <Form.Item
@@ -87,7 +125,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="175" min={50} max={250} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="175"
+              min={50}
+              max={250}
+            />
           </Form.Item>
         </div>
 
@@ -106,7 +149,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="75" min={20} max={500} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="75"
+              min={20}
+              max={500}
+            />
           </Form.Item>
 
           <Form.Item
@@ -123,7 +171,12 @@ function FitnessForm({
             ]}
             className={styles.formCol}
           >
-            <InputNumber placeholder="70" min={20} max={500} />
+            <InputNumber
+              disabled={isSubmitting}
+              placeholder="70"
+              min={20}
+              max={500}
+            />
           </Form.Item>
         </div>
 
@@ -133,8 +186,10 @@ function FitnessForm({
           rules={[
             { required: true, message: "Please select exercise duration" },
           ]}
+          style={{ marginBottom: "2rem" }}
         >
           <Select
+            disabled={isSubmitting}
             options={TIME_PER_DAY_OPTIONS}
             placeholder="Select duration"
             style={{ height: 40 }}
