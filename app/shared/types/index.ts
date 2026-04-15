@@ -7,6 +7,8 @@ export interface FitnessBasicInfo {
   height: number;
   goalWeight: number;
   timePerDay: string;
+  gender?: "Male" | "Female";
+  target?: "Weight Loss" | "Weight Gain" | "Maintenance";
 }
 
 export type FitnessFormData = FitnessBasicInfo;
