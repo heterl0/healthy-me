@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { memo, useMemo, useRef } from "react";
 import {
   Button,
   Card,
@@ -12,6 +12,7 @@ import {
 import { DualAxes, Line, Pie } from "@ant-design/charts";
 import type { FitnessReport } from "~/shared/types";
 import { useReportExportFilename } from "./hooks/use-report-export-filename";
+import { useReportCardData } from "./hooks/use-report-card-data";
 import { useReportPdfExport } from "./hooks/use-report-pdf-export";
 import styles from "./styles.module.scss";
 
@@ -20,18 +21,6 @@ const { Paragraph, Text, Title } = Typography;
 type Props = {
   data: FitnessReport;
 };
-
-type PieDatum = {
-  type: string;
-  value: number;
-};
-
-function toPercentData(record: Record<string, number>): PieDatum[] {
-  return Object.entries(record).map(([type, value]) => ({
-    type: type.replace(/_/g, " "),
-    value,
-  }));
-}
 
 function ReportCard({ data }: Props) {
   if (!data.report) {
@@ -52,45 +41,27 @@ function ReportCard({ data }: Props) {
     targetRef: reportContentRef,
     filename,
   });
-  const nutritionData = toPercentData(report.nutrition_breakdown);
-  const activityData = toPercentData(report.activity_composition);
-  const bodyData = toPercentData(report.body_composition);
-
-  const exerciseData = report.exercise_effort.map((item) => ({
-    day: item.date,
-    calories: item.calories_burned,
-    minutes: item.duration_minutes,
-  }));
-
-  const weightData = report.weight_progress.weekly_data.map((item) => ({
-    week: item.week,
-    weight: item.weight,
-    category: "progress",
-  }));
-
-  const goalData = report.weight_progress.weekly_data.map((item) => ({
-    week: item.week,
-    weight: report.weight_progress.goal_weight,
-    category: "goal",
-  }));
-
-  const startWeight = basicInfo.weight;
-  const currentWeight =
-    weightData.length > 0
-      ? weightData[weightData.length - 1].weight
-      : startWeight;
-  const goalWeight = report.weight_progress.goal_weight;
-  const totalNeed = Math.max(0, startWeight - goalWeight);
-  const done = Math.max(0, startWeight - currentWeight);
-  const timelineProgress =
-    totalNeed > 0 ? Math.min(100, (done / totalNeed) * 100) : 100;
-  const estimatedWeeks = report.weight_progress.weekly_data.length;
-
-  const exerciseColumns = [
-    { title: "Date", dataIndex: "day", key: "day" },
-    { title: "Calories Burned", dataIndex: "calories", key: "calories" },
-    { title: "Duration (min)", dataIndex: "minutes", key: "minutes" },
-  ];
+  const {
+    nutritionData,
+    activityData,
+    bodyData,
+    exerciseData,
+    lineData,
+    minWeight,
+    maxWeight,
+    timelineProgress,
+    estimatedWeeks,
+    exerciseColumns,
+  } = useReportCardData({ basicInfo, report });
+  const weightScale = useMemo(
+    () => ({
+      y: {
+        domainMin: Math.max(minWeight - 10, 0),
+        domainMax: Math.min(maxWeight + 10, 150),
+      },
+    }),
+    [maxWeight, minWeight],
+  );
 
   return (
     <Card className={styles.reportCard}>
@@ -193,7 +164,7 @@ function ReportCard({ data }: Props) {
             <Card className={styles.sectionCard} title="Weight Progress">
               <div className={styles.chartWrap}>
                 <Line
-                  data={[...weightData, ...goalData]}
+                  data={lineData}
                   xField="week"
                   yField="weight"
                   point
@@ -210,24 +181,7 @@ function ReportCard({ data }: Props) {
                       if (data[0].type !== "goal") return 0.5;
                     },
                   }}
-                  scale={{
-                    y: {
-                      domainMin: Math.max(
-                        Math.min(
-                          ...weightData.map((item) => item.weight),
-                          ...goalData.map((item) => item.weight),
-                        ) - 10,
-                        0,
-                      ),
-                      domainMax: Math.min(
-                        Math.max(
-                          ...weightData.map((item) => item.weight),
-                          ...goalData.map((item) => item.weight),
-                        ) + 10,
-                        150,
-                      ),
-                    },
-                  }}
+                  scale={weightScale}
                   legend={{ size: false }}
                   colorField="category"
                 />
@@ -281,4 +235,4 @@ function ReportCard({ data }: Props) {
   );
 }
 
-export default ReportCard;
+export default memo(ReportCard);

@@ -1,4 +1,4 @@
-import { Activity, useMemo, useState } from "react";
+import { Activity, Suspense, lazy, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Drawer,
@@ -11,17 +11,23 @@ import {
   message,
   Image,
   Flex,
+  Skeleton,
 } from "antd";
 import { AnimatePresence, motion } from "motion/react";
 import { ClipboardList, History, Menu } from "lucide-react";
 import type { FitnessBasicInfo, FitnessReport } from "~/shared/types";
 import FitnessForm from "./components/form-fitness";
-import ReportCard from "./components/report-card";
 import styles from "./styles.module.scss";
 import { generateGeminiOutput, generatePrompt } from "~/lib/gemini";
 import { FitnessSchema } from "~/shared/schema/fitness";
 import { useAppDispatch, useAppSelector } from "~/store/hooks";
-import { addReport } from "~/store/appSlice";
+import { addReport, setReportList } from "~/store/appSlice";
+import {
+  loadReportsFromStorage,
+  saveReportsToStorage,
+} from "./hooks/report-list-storage";
+
+const ReportCard = lazy(() => import("./components/report-card"));
 
 export function meta() {
   return [
@@ -44,8 +50,25 @@ export default function Home() {
   );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isStorageHydrated, setIsStorageHydrated] = useState(false);
 
   const historyItems = useMemo(() => [...reportList].reverse(), [reportList]);
+
+  useEffect(() => {
+    const reportsFromStorage = loadReportsFromStorage();
+    if (reportsFromStorage.length > 0) {
+      dispatch(setReportList(reportsFromStorage));
+    }
+    setIsStorageHydrated(true);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!isStorageHydrated) {
+      return;
+    }
+
+    saveReportsToStorage(reportList);
+  }, [isStorageHydrated, reportList]);
 
   async function onSubmit(basicInfo: FitnessBasicInfo) {
     setIsAnalyzing(true);
@@ -201,7 +224,15 @@ export default function Home() {
                     layout: { duration: 0.4 },
                   }}
                 >
-                  <ReportCard data={currentReport} />
+                  <Suspense
+                    fallback={
+                      <div className={styles.reportLoadingFallback}>
+                        <Skeleton active paragraph={{ rows: 8 }} />
+                      </div>
+                    }
+                  >
+                    <ReportCard data={currentReport} />
+                  </Suspense>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -217,11 +248,10 @@ export default function Home() {
           <Layout.Sider
             width={340}
             theme="light"
-            collapsible
-            collapsedWidth={0}
             reverseArrow
             trigger={null}
-            collapsed={!isHistoryOpen}
+            aria-hidden={!isHistoryOpen}
+            hidden={!isHistoryOpen}
             className={styles.desktopSider}
           >
             {historyContent}
@@ -237,7 +267,7 @@ export default function Home() {
             }
             open={isHistoryOpen}
             placement="bottom"
-            height="65vh"
+            size="65%"
             onClose={() => setIsHistoryOpen(false)}
           >
             {historyContent}

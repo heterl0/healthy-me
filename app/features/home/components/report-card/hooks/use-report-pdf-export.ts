@@ -1,6 +1,31 @@
 import { useCallback, useState } from "react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import type { JsPdfConstructor } from "../types/export-pdf";
+
+const PAGE_MARGIN = 10;
+const EXPORT_WIDTH = 1200;
+const MAX_SCALE = 2;
+const MIN_SCALE = 1;
+const CHART_WIDTH = 590;
+
+let pdfDepsPromise: Promise<{
+  captureToCanvas: (
+    element: HTMLElement,
+    options?: object,
+  ) => Promise<HTMLCanvasElement>;
+  JsPdf: JsPdfConstructor;
+}> | null = null;
+
+async function loadPdfDependencies() {
+  if (!pdfDepsPromise) {
+    pdfDepsPromise = Promise.all([import("html2canvas"), import("jspdf")]).then(
+      ([html2canvasModule, jspdfModule]) => ({
+        captureToCanvas: html2canvasModule.default,
+        JsPdf: jspdfModule.default,
+      }),
+    );
+  }
+  return pdfDepsPromise;
+}
 
 type Params = {
   targetRef: React.RefObject<HTMLElement | null>;
@@ -15,12 +40,6 @@ type Result = {
   error: Error | null;
 };
 
-const PAGE_MARGIN = 10;
-const EXPORT_WIDTH = 1200;
-const MAX_SCALE = 2;
-const MIN_SCALE = 1;
-const CHART_WIDTH = 590;
-
 function toError(value: unknown): Error {
   if (value instanceof Error) {
     return value;
@@ -31,12 +50,17 @@ function toError(value: unknown): Error {
 
 async function captureReportCanvas(
   element: HTMLElement,
+  captureToCanvas: (
+    element: HTMLElement,
+    options?: object,
+  ) => Promise<HTMLCanvasElement>,
 ): Promise<HTMLCanvasElement> {
   const originalInlineStyle = element.getAttribute("style");
 
   element.style.width = `${EXPORT_WIDTH}px`;
   element.style.maxWidth = `${EXPORT_WIDTH}px`;
 
+  // Set the max width for the charts to avoid overflow.
   const canvases = document.querySelectorAll(
     "div.ant-row div[data-chart-source-type='Ant Design Charts']",
   );
@@ -49,7 +73,7 @@ async function captureReportCanvas(
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
   try {
-    return await html2canvas(element, {
+    return await captureToCanvas(element, {
       scale: Math.min(
         Math.max(window.devicePixelRatio || 1, MIN_SCALE),
         MAX_SCALE,
@@ -73,8 +97,12 @@ async function captureReportCanvas(
   }
 }
 
-function buildPaginatedPdf(canvas: HTMLCanvasElement, filename: string): void {
-  const pdf = new jsPDF({
+function buildPaginatedPdf(
+  canvas: HTMLCanvasElement,
+  filename: string,
+  JsPdf: JsPdfConstructor,
+): void {
+  const pdf = new JsPdf({
     orientation: "p",
     unit: "mm",
     format: "a4",
@@ -154,8 +182,9 @@ export function useReportPdfExport({ targetRef, filename }: Params): Result {
 
     try {
       const element = targetRef.current;
-      const canvas = await captureReportCanvas(element);
-      buildPaginatedPdf(canvas, filename);
+      const { captureToCanvas, JsPdf } = await loadPdfDependencies();
+      const canvas = await captureReportCanvas(element, captureToCanvas);
+      buildPaginatedPdf(canvas, filename, JsPdf);
       return { ok: true as const };
     } catch (caughtError) {
       const exportError = toError(caughtError);
