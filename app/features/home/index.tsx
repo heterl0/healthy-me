@@ -66,6 +66,8 @@ function Home() {
       const response = await generateGeminiOutput(prompt, {
         responseMimeType: "application/json",
         responseJsonSchema: FitnessSchema.toJSONSchema(),
+        temperature: 0.2,
+        topP: 0.4,
       });
       const reportData = FitnessSchema.parse(JSON.parse(response));
       const nextReport: FitnessReport = {
