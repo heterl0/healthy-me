@@ -44,7 +44,11 @@ function HistoryPanel({
               }`}
               onClick={() => !isDisabled && onSelectReport(item)}
             >
-              <Space direction="vertical" size={4} className={styles.historyMeta}>
+              <Space
+                direction="vertical"
+                size={4}
+                className={styles.historyMeta}
+              >
                 <Typography.Text strong>{item.basicInfo.name}</Typography.Text>
                 <Typography.Text type="secondary">
                   {new Date(item.createdAt).toLocaleString("en-GB")}

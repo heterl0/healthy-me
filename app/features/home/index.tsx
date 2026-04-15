@@ -1,11 +1,4 @@
-import {
-  Button,
-  Drawer,
-  Flex,
-  Image,
-  Layout,
-  message,
-} from "antd";
+import { Button, Drawer, Flex, Image, Layout, message } from "antd";
 import { ClipboardList, History, Menu } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { Suspense, lazy, useMemo, useState } from "react";
