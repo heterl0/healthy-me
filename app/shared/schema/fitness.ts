@@ -14,6 +14,13 @@ export const FitnessSchema = z.object({
       date: z.string(),
       calories_burned: z.number().min(0),
       duration_minutes: z.number().min(0),
+      exercise_type: z.enum([
+        "cardio",
+        "strength",
+        "stretching",
+        "yoga",
+        "rest",
+      ]),
     }),
   ),
 

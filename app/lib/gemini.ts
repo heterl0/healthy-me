@@ -25,17 +25,21 @@ export function generatePrompt(basicInfo: FitnessBasicInfo): string {
   **User Metrics:**
   * **Name:** ${basicInfo.name}
   * **Age:** ${basicInfo.age}
+  * **Gender:** ${basicInfo.gender}
   * **Current Weight:** ${basicInfo.weight} kg
   * **Height:** ${basicInfo.height} cm
   * **Goal Weight:** ${basicInfo.goalWeight} kg
+  * **Target:** ${basicInfo.target}
   * **Exercise Capacity:** ${basicInfo.timePerDay} minutes per day
 
   **Constraint Rules:**
   1. **Nutrition Breakdown:** Represent \`protein\`, \`carbs\`, and \`fat\` as percentages that sum to 100%.
   2. **Activity Composition:** Ensure \`cardio\`, \`strength\`, \`stretching\`, and \`rest\` sum to 100% of the weekly routine.
-  3. **Weight Progress:** Project a realistic 4-week weight loss/gain trajectory based on the goal weight and daily exercise time.
+  3. **Weight Progress:** Project a realistic (4 - 12) weeks weight loss/gain trajectory based on the goal weight and daily exercise time.
   4. **Body Composition:** Estimate realistic percentages based on the user's current weight and height (BMI proxy).
-  5. **Output Format:** Return ONLY a valid JSON object. No markdown prose, no explanations.
+  5. **Exercise Type:** The exercise type should be one of the following: \`cardio\`, \`strength\`, \`stretching\`, \`yoga\`, \`rest\`. Duration could be dynamic in minutes.
+  6. **Exercise Effort:** Date start from today ${new Date().toISOString().split("T")[0]} and follow with the number of days equal to weeks suggestions to create realistic calendar.
+  7. **Output Format:** Return ONLY a valid JSON object. No markdown prose, no explanations.
 
   **Required JSON Structure:**
   \`\`\`json
@@ -47,7 +51,7 @@ export function generatePrompt(basicInfo: FitnessBasicInfo): string {
       "fat": number
     },
     "exercise_effort": [
-      { "date": "YYYY-MM-DD", "calories_burned": number, "duration_minutes": number }
+      { "date": "YYYY-MM-DD", "calories_burned": number, "duration_minutes": number, "exercise_type": "cardio" | "strength" | "stretching" | "yoga" | "rest"  }
     ],
     "weight_progress": {
       "goal_weight": number,

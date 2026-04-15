@@ -1,11 +1,43 @@
-.homeContainer {
+.homeLayout {
+  min-height: 100dvh;
+  background: #f5f7fb;
+}
+
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: #ffffff;
+  border-bottom: 1px solid #eceff3;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111827;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mainLayout {
+  background: transparent;
+}
+
+.mainContent {
   display: flex;
   flex-direction: column;
-  gap: 24px;
   align-items: center;
-  min-height: 100vh;
-  padding: 24px 16px 48px;
-  background: #f5f7fb;
+  gap: 16px;
+  min-height: calc(100dvh - 64px);
+  padding: 24px 16px 36px;
 }
 
 .transitionCard {
@@ -17,4 +49,63 @@
   margin: 0;
   color: #6b7280;
   font-size: 13px;
+}
+
+.desktopSider {
+  background: #ffffff !important;
+  border-left: 1px solid #eceff3;
+}
+
+.historyPanel {
+  height: 100%;
+  padding: 16px 12px 12px;
+}
+
+.historyHeader {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.historyTitle {
+  margin: 0 !important;
+}
+
+.historyItem {
+  padding: 10px !important;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.historyItem:hover {
+  background: #f6f8fb;
+}
+
+.historyItemActive {
+  background: #edf5ff;
+}
+
+.historyMeta {
+  width: 100%;
+}
+
+.mobileHistoryDrawer {
+  :global(.ant-drawer-header-title) {
+    align-items: center;
+  }
+}
+
+@media (min-width: 992px) {
+  .topBar {
+    padding: 0 24px;
+  }
+
+  .mainContent {
+    padding: 28px 24px 40px;
+  }
 }

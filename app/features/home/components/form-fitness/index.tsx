@@ -1,5 +1,4 @@
-import { Form, Input, InputNumber, Button, Select, Card } from "antd";
-import { Activity } from "lucide-react";
+import { Form, Input, InputNumber, Button, Select, Card, Image } from "antd";
 import styles from "./styles.module.scss";
 import type { FitnessFormData } from "~/shared/types";
 
@@ -9,7 +8,16 @@ type Props = {
   submitLabel?: string;
 };
 
-export default function FitnessForm({
+const TIME_PER_DAY_OPTIONS = [
+  { label: "15 minutes", value: "15" },
+  { label: "30 minutes", value: "30" },
+  { label: "45 minutes", value: "45" },
+  { label: "60 minutes", value: "60" },
+  { label: "90 minutes", value: "90" },
+  { label: "120 minutes", value: "120" },
+];
+
+function FitnessForm({
   onSubmit,
   isSubmitting = false,
   submitLabel = "Save Profile",
@@ -17,22 +25,14 @@ export default function FitnessForm({
   const [form] = Form.useForm<FitnessFormData>();
 
   const handleSubmit = async (values: FitnessFormData) => {
-    const formData: FitnessFormData = {
-      name: values.name,
-      age: values.age,
-      weight: values.weight,
-      height: values.height,
-      goalWeight: values.goalWeight,
-      timePerDay: values.timePerDay,
-    };
-    await onSubmit(formData);
+    await onSubmit(values);
   };
 
   return (
     <Card className={styles.formCard}>
       <div className={styles.formHeader}>
-        <Activity className={styles.headerIcon} />
-        <h1 className={styles.title}>Fitness Tracker</h1>
+        <Image src="/logo.png" alt="HeathyMe" height={40} preview={false} />
+        <h1 className={styles.title}>Fitness Report</h1>
       </div>
       <p className={styles.subtitle}>
         {isSubmitting
@@ -52,7 +52,7 @@ export default function FitnessForm({
           name="name"
           rules={[{ required: true, message: "Please enter your name" }]}
         >
-          <Input placeholder="John Doe" className={styles.input} />
+          <Input placeholder="Hieu Le Van" className={styles.input} />
         </Form.Item>
 
         <div className={styles.formRow}>
@@ -134,14 +134,11 @@ export default function FitnessForm({
             { required: true, message: "Please select exercise duration" },
           ]}
         >
-          <Select placeholder="Select duration" style={{ height: 40 }}>
-            <Select.Option value="15">15 minutes</Select.Option>
-            <Select.Option value="30">30 minutes</Select.Option>
-            <Select.Option value="45">45 minutes</Select.Option>
-            <Select.Option value="60">60 minutes</Select.Option>
-            <Select.Option value="90">90 minutes</Select.Option>
-            <Select.Option value="120">120 minutes</Select.Option>
-          </Select>
+          <Select
+            options={TIME_PER_DAY_OPTIONS}
+            placeholder="Select duration"
+            style={{ height: 40 }}
+          />
         </Form.Item>
 
         <Form.Item>
@@ -160,3 +157,5 @@ export default function FitnessForm({
     </Card>
   );
 }
+
+export default FitnessForm;
