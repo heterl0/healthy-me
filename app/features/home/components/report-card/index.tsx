@@ -1,5 +1,6 @@
 import { memo, useMemo, useRef, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -38,7 +39,7 @@ function ReportCard({ data }: Props) {
     name: basicInfo.name,
     createdAt,
   });
-  const { exportPdf, isExporting } = useReportPdfExport({
+  const { exportPdf, isExporting, error } = useReportPdfExport({
     targetRef: reportContentRef,
     filename,
   });
@@ -112,6 +113,15 @@ function ReportCard({ data }: Props) {
           Export PDF
         </Button>
       </div>
+      {error ? (
+        <Alert
+          className={styles.exportError}
+          type="error"
+          showIcon
+          message="PDF export failed"
+          description={error.message}
+        />
+      ) : null}
 
       <div ref={reportContentRef}>
         <Card className={styles.sectionCard} title="Summary">

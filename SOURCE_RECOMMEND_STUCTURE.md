@@ -1,85 +1,82 @@
-# Recommended Structure
+# Structure Status (Current + Roadmap)
+
+This document is the architecture reference for the current codebase and a roadmap for future changes.
+
+## Current implemented structure (Now)
 
 ```text
-src/
-├── app/
-│   ├── antd-app.tsx          # AntD ConfigProvider
-│   ├── root.tsx              # Router, providers
-│   ├── routes.ts             # Route definitions
-│   └── app.scss              # Global styles
-│
-├── features/                 # 👈 Core change — rename from pages
-│   ├── chat/
-│   │   ├── components/       # Chat-specific components
-│   │   ├── hooks/            # useChat, useStream
-│   │   ├── api/              # LLM calls
-│   │   ├── store/            # Chat redux slice
-│   │   ├── types/            # Chat types
-│   │   ├── utils/            # Chat helpers
-│   │   └── index.tsx         # Page entry point
-│   │
-│   ├── auth/
-│   │   ├── components/
-│   │   ├── hooks/            # useAuth
-│   │   ├── lib/              # jwt, cookie utils
-│   │   └── index.tsx
-│   │
-│   └── history/
-│       ├── components/
+app/
+├── antd-app.tsx
+├── app.scss
+├── root.tsx
+├── routes.ts                    # currently only home route
+├── lib/
+│   └── gemini.ts
+├── store/
+│   ├── index.ts                 # root store config
+│   ├── appSlice.ts              # app/report state
+│   └── hooks.ts
+├── features/
+│   └── home/
+│       ├── index.tsx
 │       ├── hooks/
-│       └── index.tsx
-│
-├── shared/                   # 👈 Truly shared across features
-│   ├── components/           # Button wrappers, Layout, etc
-│   ├── hooks/                # useDebounce, useLocalStorage
-│   ├── utils/                # formatDate, cn()
-│   └── types/                # Global types
-│
-├── store/                    # Root redux store + combine slices
-└── lib/                      # 3rd party config (axios instance etc)
+│       └── components/
+│           ├── form-fitness/
+│           └── report-card/
+├── shared/
+│   ├── hooks/
+│   ├── schema/
+│   ├── types/
+│   └── utils/
+└── MOCK/
+    └── data.ts
 ```
 
----
+Current route entry:
 
-## The Rule That Makes This Work
+```ts
+export default [index("features/home/index.tsx")] satisfies RouteConfig;
+```
+
+## Import boundary rule (Now)
 
 ```text
-features/chat  ✅ can import from  shared/
-features/chat  ✅ can import from  lib/
-features/chat  ❌ cannot import from  features/history/
+features/home ✅ can import from shared/
+features/home ✅ can import from app/lib/
+features/home ❌ should not import from other features directly
 ```
 
-Features **never import from each other**. If two features need the same thing — it moves to `shared/`.
+If code is reused across features, move it into `shared/`.
 
----
+## Recommended target structure (Later)
 
-## What I'd Disagree With Your Current Structure
+Use this only as a roadmap when the app grows beyond a single primary feature.
 
-| Current               | Issue                                                                     |
-| --------------------- | ------------------------------------------------------------------------- |
-| `store/` at root      | Split slices into each feature, only root combiner stays at root          |
-| `types/` at root      | Types should live with their feature, only global types in `shared/types` |
-| `welcome/` folder     | Should be `features/welcome/` for consistency                             |
-| `lib/` inside `app/`  | Move to root-level `lib/` — it's not app-specific                         |
-| `routes.ts` flat file | Fine for now, but will grow — consider splitting per feature              |
-
----
-
-## Your `routes.ts` With This Structure
-
-```typescript
-// app/routes.ts
-import { lazy } from "react";
-
-const ChatPage = lazy(() => import("../features/chat"));
-const AuthPage = lazy(() => import("../features/auth"));
-const HistoryPage = lazy(() => import("../features/history"));
-
-export const routes = [
-  { path: "/login", element: <AuthPage /> },
-  { path: "/chat", element: <ChatPage />, protected: true },
-  { path: "/history", element: <HistoryPage />, protected: true },
-];
+```text
+app/
+├── core app files (root.tsx, routes.ts, antd-app.tsx)
+├── features/
+│   ├── home/
+│   ├── auth/        # planned
+│   ├── chat/        # planned
+│   └── history/     # planned
+├── shared/
+├── store/           # root combine/store config
+└── lib/             # app-wide 3rd-party integrations
 ```
 
-Each feature's `index.tsx` is the **only public API** of that feature — everything else is internal.
+## Roadmap items and status
+
+| Item | Status | Notes |
+| --- | --- | --- |
+| Add feature routes (`auth`, `chat`, `history`) | Later | Not implemented in `app/routes.ts` yet |
+| Keep features isolated from each other | Now | Enforced by convention; continue reviewing imports |
+| Split large route config by feature if needed | Later | Current single route does not require modularization yet |
+| Move app-wide integrations to stable `lib` location | Now | `app/lib/gemini.ts` is current source of truth |
+| Move slice ownership closer to features when needed | Later | Current centralized store is acceptable for present scope |
+
+## Guidance for future contributors
+
+- Treat this file as a living reference: update `Now` when implementation changes.
+- Do not describe roadmap items as active migrations unless work has started.
+- Keep `routes.ts`, `store`, and feature folder examples synchronized with real code.
